@@ -19,12 +19,12 @@ function startOfDay(d: Date) {
 export async function enregistrerScan(qrContent: string) {
   const { valid, matricule } = verifyToken(qrContent.trim());
   if (!valid || !matricule) {
-    return { success: false, message: 'QR code invalide ou falsifié' };
+    return { success: false as const, message: 'QR code invalide ou falsifié' };
   }
 
   const agent = await prisma.personnel.findUnique({ where: { matricule } });
   if (!agent) {
-    return { success: false, message: 'Aucun agent ne correspond à ce badge' };
+    return { success: false as const, message: 'Aucun agent ne correspond à ce badge' };
   }
 
   const today = startOfDay(new Date());
@@ -40,7 +40,7 @@ export async function enregistrerScan(qrContent: string) {
     });
     revalidatePath('/presences');
     return {
-      success: true,
+      success: true as const,
       type: 'ARRIVEE' as const,
       agentNom: `${agent.prenom} ${agent.nom}`,
       heure: now,
@@ -55,7 +55,7 @@ export async function enregistrerScan(qrContent: string) {
     });
     revalidatePath('/presences');
     return {
-      success: true,
+      success: true as const,
       type: 'DEPART' as const,
       agentNom: `${agent.prenom} ${agent.nom}`,
       heure: now,
@@ -63,7 +63,10 @@ export async function enregistrerScan(qrContent: string) {
     };
   }
 
-  return { success: false, message: `${agent.prenom} ${agent.nom} a déjà pointé son arrivée et son départ aujourd'hui` };
+  return {
+    success: false as const,
+    message: `${agent.prenom} ${agent.nom} a déjà pointé son arrivée et son départ aujourd'hui`
+  };
 }
 
 export async function rechercherPresences(params: {
