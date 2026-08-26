@@ -1,14 +1,8 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[personnelId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
-
-*/
 -- AlterEnum
 ALTER TYPE "UserRole" ADD VALUE 'AGENT';
 
 -- AlterTable
-ALTER TABLE "User" ADD COLUMN     "personnelId" TEXT;
+ALTER TABLE "User" ADD COLUMN "personnelId" TEXT;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_personnelId_key" ON "User"("personnelId");
