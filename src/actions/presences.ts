@@ -10,13 +10,17 @@ function startOfDay(d: Date) {
   return x;
 }
 
+type ScanResult =
+  | { success: false; message: string }
+  | { success: true; type: 'ARRIVEE' | 'DEPART'; agentNom: string; heure: Date; presenceId: number };
+
 /**
  * Enregistre un pointage à partir du contenu décodé d'un QR.
  * 1er scan du jour pour l'agent -> heure d'arrivée, statut PAS_ENCORE
  * 2e scan du jour pour l'agent  -> heure de départ, statut PRESENT
  * scan supplémentaire le même jour -> ignoré (déjà pointé)
  */
-export async function enregistrerScan(qrContent: string) {
+export async function enregistrerScan(qrContent: string): Promise<ScanResult> {
   const { valid, matricule } = verifyToken(qrContent.trim());
   if (!valid || !matricule) {
     return { success: false, message: 'QR code invalide ou falsifié' };
