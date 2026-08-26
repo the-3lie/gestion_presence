@@ -4,16 +4,6 @@ import { useEffect, useState } from 'react';
 import { rechercherPresences, calculerEffectif } from '@/actions/presences';
 import { rechercherAgents } from '@/actions/personnel';
 
-const DUREE_JOURNEE_MS = 8 * 60 * 60 * 1000; // 8h
-
-function calculerStatutPresence(p: any): 'PRESENT' | 'INCOMPLET' | 'PAS ENCORE' {
-  if (!p.heureArrivee || !p.heureDepart) return 'PAS ENCORE';
-
-  const duree = new Date(p.heureDepart).getTime() - new Date(p.heureArrivee).getTime();
-
-  return duree >= DUREE_JOURNEE_MS ? 'PRESENT' : 'INCOMPLET';
-}
-
 export default function PresencesPage() {
   const [presences, setPresences] = useState<any[]>([]);
   const [matricule, setMatricule] = useState('');
@@ -74,32 +64,24 @@ export default function PresencesPage() {
             </tr>
           </thead>
           <tbody>
-            {presences.map((p) => {
-              const statut = calculerStatutPresence(p);
-
-              return (
-                <tr key={p.id} className="border-b border-[#DCD6C7]">
-                  <td className="py-2 font-mono">{p.id}</td>
-                  <td>{new Date(p.date).toLocaleDateString('fr-FR')}</td>
-                  <td className="font-mono">{p.heureArrivee ? new Date(p.heureArrivee).toLocaleTimeString('fr-FR') : '—'}</td>
-                  <td className="font-mono">{p.heureDepart ? new Date(p.heureDepart).toLocaleTimeString('fr-FR') : 'PAS ENCORE'}</td>
-                  <td>{p.personnel.prenom} {p.personnel.nom}</td>
-                  <td>
-                    <span
-                      className={`text-xs font-mono px-2 py-0.5 rounded-full ${
-                        statut === 'PRESENT'
-                          ? 'bg-[#E7F1EA] text-green'
-                          : statut === 'INCOMPLET'
-                          ? 'bg-[#F7E9D7] text-clay'
-                          : 'bg-[#EDE9DE] text-[#5B6472]'
-                      }`}
-                    >
-                      {statut}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
+            {presences.map((p) => (
+              <tr key={p.id} className="border-b border-[#DCD6C7]">
+                <td className="py-2 font-mono">{p.id}</td>
+                <td>{new Date(p.date).toLocaleDateString('fr-FR')}</td>
+                <td className="font-mono">{p.heureArrivee ? new Date(p.heureArrivee).toLocaleTimeString('fr-FR') : '—'}</td>
+                <td className="font-mono">{p.heureDepart ? new Date(p.heureDepart).toLocaleTimeString('fr-FR') : 'PAS ENCORE'}</td>
+                <td>{p.personnel.prenom} {p.personnel.nom}</td>
+                <td>
+                  <span
+                    className={`text-xs font-mono px-2 py-0.5 rounded-full ${
+                      p.statut === 'PRESENT' ? 'bg-[#E7F1EA] text-green' : 'bg-[#EDE9DE] text-[#5B6472]'
+                    }`}
+                  >
+                    {p.statut === 'PRESENT' ? 'PRESENT' : 'PAS ENCORE'}
+                  </span>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -27,7 +27,10 @@ export default function LoginPage() {
       setErreur('Identifiant ou mot de passe incorrect');
       return;
     }
-    router.push('/');
+
+    const session = await getSession();
+    const role = (session?.user as any)?.role;
+    router.push(role === 'AGENT' ? '/espace-agent' : '/');
   }
 
   return (
@@ -68,11 +71,16 @@ export default function LoginPage() {
         </form>
 
         <div className="flex justify-between mt-4 text-sm">
-          <Link href="/creer-compte" className="text-[#5B6472] hover:text-ink">
-            Créer un compte
+          <Link href="/creer-compte-agent" className="text-[#5B6472] hover:text-ink">
+            Espace agent · créer mon compte
           </Link>
           <Link href="/mot-de-passe-oublie" className="text-[#5B6472] hover:text-ink">
             Mot de passe oublié ?
+          </Link>
+        </div>
+        <div className="mt-2 text-sm">
+          <Link href="/creer-compte" className="text-[#5B6472] hover:text-ink">
+            Créer un compte administrateur
           </Link>
         </div>
       </div>

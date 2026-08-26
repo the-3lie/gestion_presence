@@ -52,7 +52,23 @@ async function main() {
     });
   }
 
-  console.log('Seed terminé. Connexion: admin / admin123');
+  const agentPersonnel = await prisma.personnel.findUnique({ where: { matricule: '1234' } });
+  if (agentPersonnel) {
+    const agentPasswordHash = await bcrypt.hash('agent123', 10);
+    await prisma.user.upsert({
+      where: { username: '1234' },
+      update: {},
+      create: {
+        username: '1234',
+        passwordHash: agentPasswordHash,
+        role: 'AGENT',
+        personnelId: agentPersonnel.id
+      }
+    });
+  }
+
+  console.log('Seed terminé. Connexion admin : admin / admin123');
+  console.log('Seed terminé. Connexion agent (espace agent) : 1234 / agent123');
 }
 
 main()
